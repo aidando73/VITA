@@ -361,7 +361,28 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         # extract fbank features
         features = [self._extract_fbank_features(waveform) for waveform in raw_speech]
 
+        # Visualize mel filter bank spectrogram as a graph
+        import matplotlib.pyplot as plt
         
+        for i, feature in enumerate(features):
+            if i >= 1:  # Only show the first sample to avoid too many plots
+                break
+                
+            plt.figure(figsize=(10, 4))
+            plt.imshow(feature.T, aspect='auto', origin='lower')
+            plt.colorbar(format='%+2.0f dB')
+            plt.title(f'Mel Spectrogram')
+            plt.xlabel('Time Frames')
+            plt.ylabel('Mel Frequency Bins')
+            plt.tight_layout()
+            
+            # Save the plot to a file
+            output_dir = 'mel_spectrograms'
+            os.makedirs(output_dir, exist_ok=True)
+            plt.savefig(f'{output_dir}/mel_spectrogram_sample_{i}.png')
+            plt.close()
+            
+            print(f"Mel spectrogram visualization saved to {output_dir}/mel_spectrogram_sample_{i}.png")
 
         # convert into correct format for padding
         encoded_inputs = BatchFeature({"input_features": features})
