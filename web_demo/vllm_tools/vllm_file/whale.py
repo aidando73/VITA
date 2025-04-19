@@ -205,6 +205,7 @@ class WhaleConv2dSubsampling4(nn.Module):
         """
         x = x.unsqueeze(1)  # (b, c=1, t, f)
         x = self.conv_in(x)
+        print("x after conv subsampling", x.shape)
         b, c, t, f = x.size()
         x = self.out(x.transpose(1, 2).contiguous().view(b, t, c * f))
 
