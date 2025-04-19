@@ -487,8 +487,7 @@ def _launch_demo(llm, model_config, sampling_params, tokenizer, feature_extracto
         server_name="0.0.0.0",
         server_port=server_port,
         show_api=False,
-        show_error=False,
-        auth=('123','123'),
+        show_error=False
         )
 
 def main(model_path):
