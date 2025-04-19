@@ -410,6 +410,8 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         if attention_mask is not None:
             padded_inputs["attention_mask"] = [np.asarray(array, dtype=np.int32) for array in attention_mask]
 
+        print("attention_mask", attention_mask)
+
         # Utterance-level cepstral mean and variance normalization
         if self.do_ceptral_normalize:
             attention_mask = (
