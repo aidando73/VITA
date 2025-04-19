@@ -2,3 +2,4 @@ env/
 **/__pycache__/
 vita_demo/
 .envrc
+demo_VITA_ckpt/

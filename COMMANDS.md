@@ -17,8 +17,7 @@ uv pip install -r web_demo/web_demo_requirements.txt
 uv pip install einops timm
 cp ~/.runpod_credentials .envrc
 huggingface-cli login --token $HF_TOKEN
-huggingface-cli download VITA-MLLM/VITA-1.5
-cp -rL VITA-1.5 demo_VITA_ckpt
+huggingface-cli download VITA-MLLM/VITA-1.5 --local-dir demo_VITA_ckpt
 mv demo_VITA_ckpt/config.json demo_VITA_ckpt/origin_config.json
 cd ./web_demo/vllm_tools
 cp -rf qwen2p5_model_weight_file/*  ../../demo_VITA_ckpt/
