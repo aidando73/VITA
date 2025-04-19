@@ -236,6 +236,7 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         self, input_features: List[np.ndarray], attention_mask: Optional[np.ndarray] = None
     ) -> List[np.ndarray]:
         lengths = attention_mask.sum(-1) if attention_mask is not None else [x.shape[0] for x in input_features]
+        print("lengths", lengths)
         return [
             self.utterance_cmvn(
                 x, 
@@ -420,9 +421,27 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
                 if self._get_padding_strategies(padding, max_length=max_length) is not PaddingStrategy.DO_NOT_PAD
                 else None
             )
+            # Print input feature statistics before normalization
+            print("Before CMVN:")
+            for i, feature in enumerate(padded_inputs["input_features"]):
+                print(f"Input feature {i} shape: {feature.shape}")
+                print(f"Input feature {i} mean: {np.mean(feature):.6f}")
+                print(f"Input feature {i} std: {np.std(feature):.6f}")
+                print(f"Input feature {i} min: {np.min(feature):.6f}")
+                print(f"Input feature {i} max: {np.max(feature):.6f}")
+
             padded_inputs["input_features"] = self.normalize(
                 padded_inputs["input_features"], attention_mask=attention_mask
             )
+
+            # Print input feature statistics after normalization
+            print("After CMVN:")
+            for i, feature in enumerate(padded_inputs["input_features"]):
+                print(f"Input feature {i} shape: {feature.shape}")
+                print(f"Input feature {i} mean: {np.mean(feature):.6f}")
+                print(f"Input feature {i} std: {np.std(feature):.6f}")
+                print(f"Input feature {i} min: {np.min(feature):.6f}")
+                print(f"Input feature {i} max: {np.max(feature):.6f}")
 
         if return_tensors is not None:
             padded_inputs = padded_inputs.convert_to_tensors(return_tensors)
