@@ -639,6 +639,10 @@ class WhaleAudioModel(PreTrainedModel):
                 hidden_states, pos_embeds = self.embeddings(input_features)
             else:
                 raise ValueError(f'wrong pixel_values size: {input_features.shape}')
+        
+        print("hidden_states", hidden_states.shape)
+        print("pos_embeds", pos_embeds.shape)
+
         encoder_outputs = self.encoder(
             inputs_embeds=hidden_states,
             attention_mask=attention_mask,
