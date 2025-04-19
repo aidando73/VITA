@@ -385,9 +385,10 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
 
         # convert into correct format for padding
         encoded_inputs = BatchFeature({"input_features": features})
-        print("encoded_inputs", encoded_inputs)
-        print("encoded_inputs['input_features']", [feature.shape for feature in encoded_inputs['input_features']])
+        # print("encoded_inputs", encoded_inputs)
+        # print("encoded_inputs['input_features']", [feature.shape for feature in encoded_inputs['input_features']])
 
+        print("padding enabled: ", padding)
         padded_inputs = self.pad(
             encoded_inputs,
             padding=padding,
@@ -397,8 +398,9 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
             return_attention_mask=return_attention_mask,
             **kwargs,
         )
-        print("padded_inputs", padded_inputs)
-        print("padded_inputs['input_features']", [feature.shape for feature in padded_inputs['input_features']])
+        # print("padded_inputs", padded_inputs)
+        # print("padded_inputs['input_features']", [feature.shape for feature in padded_inputs['input_features']])
+
         # make sure list is in array format
         input_features = padded_inputs.get("input_features")
         if isinstance(input_features[0], list):
