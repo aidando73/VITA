@@ -177,6 +177,7 @@ class WhaleConv2dSubsampling4(nn.Module):
         )
 
         self.intermediate_size = self.hidden_size * (((self.input_dim - 1) // 2 - 1) // 2)
+        print("intermediate_size", self.intermediate_size)
         self.out = nn.Linear(self.intermediate_size, self.hidden_size)
         # The right context for every conv layer is computed by:
         # (kernel_size - 1) * frame_rate_of_this_layer
@@ -214,6 +215,7 @@ class WhaleConv2dSubsampling4(nn.Module):
         print("x after reshape", x.shape)
 
         x = self.out(x)
+        print("x after out", x.shape)
 
         return x, x_mask[:, 2::2][:, 2::2]
     
