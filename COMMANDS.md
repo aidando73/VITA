@@ -33,8 +33,7 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 	&& apt update \
 	&& apt install ngrok
 
-# Set credentials
-
+tmux
 ngrok config add-authtoken $NGROK_TOKEN
 ngrok http 18806 --url=lasting-swan-large.ngrok-free.app --basic-auth "$NGROK_USERNAME:$NGROK_PASSWORD"
 ```
