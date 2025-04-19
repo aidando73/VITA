@@ -14,7 +14,7 @@ pip install uv
 uv pip install --upgrade pip
 apt install portaudio19-dev python3-pyaudio
 uv pip install -r web_demo/web_demo_requirements.txt
-uv pip install einops timm
+uv pip install einops timm matplotlib
 cp ~/.runpod_credentials .envrc
 huggingface-cli login --token $HF_TOKEN
 huggingface-cli download VITA-MLLM/VITA-1.5 --local-dir demo_VITA_ckpt

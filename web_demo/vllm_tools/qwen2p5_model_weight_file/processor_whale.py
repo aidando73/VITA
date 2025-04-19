@@ -356,8 +356,12 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         if not is_batched:
             raw_speech = [raw_speech]
 
+        print(sampling_rate)
+
         # extract fbank features
         features = [self._extract_fbank_features(waveform) for waveform in raw_speech]
+
+        
 
         # convert into correct format for padding
         encoded_inputs = BatchFeature({"input_features": features})
