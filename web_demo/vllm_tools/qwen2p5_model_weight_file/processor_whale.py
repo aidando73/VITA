@@ -114,8 +114,8 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         self.cmvn_istds = cmvn_istds
         print("cmvn_preload", self.cmvn_preload)
         print("cmvn_file", self.cmvn_file)
-        print("cmvn_means", self.cmvn_means)
-        print("cmvn_istds", self.cmvn_istds)
+        # print("cmvn_means", self.cmvn_means)
+        # print("cmvn_istds", self.cmvn_istds)
 
         if self.cmvn_preload:
             if self.cmvn_means is not None and self.cmvn_istds is not None:

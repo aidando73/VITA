@@ -617,6 +617,12 @@ class WhaleAudioModel(PreTrainedModel):
             return_dict: Optional[bool] = None,
             pixel_embeds: Optional[torch.FloatTensor] = None,
     ) -> Union[Tuple, BaseModelOutputWithPooling]:
+        print("input_features", input_features.shape)
+        print("attention_mask", attention_mask.shape)
+        print("output_hidden_states", output_hidden_states)
+        print("return_dict", return_dict)
+        print("pixel_embeds", pixel_embeds)
+
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
         )
