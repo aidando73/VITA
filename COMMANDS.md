@@ -14,5 +14,9 @@ pip install uv
 uv pip install --upgrade pip
 apt install portaudio19-dev python3-pyaudio
 uv pip install -r web_demo/web_demo_requirements.txt
-uv pip install einops
+uv pip install einops timm
+python -m web_demo.web_ability_demo  demo_VITA_ckpt/
+
+
+cp ~/.runpod_credentials .envrc
 ```
