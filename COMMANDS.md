@@ -14,4 +14,5 @@ pip install uv
 uv pip install --upgrade pip
 apt install portaudio19-dev python3-pyaudio
 uv pip install -r web_demo/web_demo_requirements.txt
+uv pip install einops
 ```
