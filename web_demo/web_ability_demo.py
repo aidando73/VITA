@@ -18,6 +18,8 @@ from vita.model.builder import load_pretrained_model
 from vita.model.vita_tts.decoder.llm2tts import llm2TTS
 from vita.model.language_model.vita_qwen2 import VITAQwen2Config, VITAQwen2ForCausalLM
 from transformers import AutoConfig, AutoModel, AutoTokenizer, AutoFeatureExtractor
+import time
+
 decoder_topk = 2
 codec_chunk_size = 40
 codec_padding_size = 10
