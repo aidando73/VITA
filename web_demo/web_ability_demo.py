@@ -398,6 +398,7 @@ def _launch_demo(llm, model_config, sampling_params, tokenizer, feature_extracto
         return []
 
     def stream_audio_output(history, task_history):
+        start_time = time.time()
         text = task_history[-1][-1]
         if not text:
             import pdb;pdb.set_trace()
