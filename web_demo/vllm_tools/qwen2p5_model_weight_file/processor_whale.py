@@ -363,7 +363,6 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
 
         # Visualize mel filter bank spectrogram as a graph
         import matplotlib.pyplot as plt
-        
         for i, feature in enumerate(features):
             if i >= 1:  # Only show the first sample to avoid too many plots
                 break
