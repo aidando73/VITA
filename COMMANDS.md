@@ -15,8 +15,14 @@ uv pip install --upgrade pip
 apt install portaudio19-dev python3-pyaudio
 uv pip install -r web_demo/web_demo_requirements.txt
 uv pip install einops timm
-python -m web_demo.web_ability_demo  demo_VITA_ckpt/
-
-
 cp ~/.runpod_credentials .envrc
+huggingface-cli login --token $HF_TOKEN
+huggingface-cli download VITA-MLLM/VITA-1.5
+cp -rL VITA-1.5 demo_VITA_ckpt
+mv demo_VITA_ckpt/config.json demo_VITA_ckpt/origin_config.json
+cd ./web_demo/vllm_tools
+cp -rf qwen2p5_model_weight_file/*  ../../demo_VITA_ckpt/
+cp -rf vllm_file/*  ../../vita_demo/lib/python3.10/site-packages/vllm/model_executor/models/
+cd /workspace/VITA
+python -m web_demo.web_ability_demo demo_VITA_ckpt/
 ```
