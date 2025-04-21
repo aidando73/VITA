@@ -314,7 +314,10 @@ class RelPositionalEncoding(WhalePositionalEncoding):
             torch.Tensor: Positional embedding tensor (1, time, `*`).
         """
         self.pe = self.pe.to(x.device)
+        print("xscale", self.xscale)
+        print(f"x mean: {torch.mean(x).item()}, x std: {torch.std(x).item()}, x min: {torch.min(x).item()}, x max: {torch.max(x).item()}")
         x = x * self.xscale
+        print(f"x after xscale mean: {torch.mean(x).item()}, x std: {torch.std(x).item()}, x min: {torch.min(x).item()}, x max: {torch.max(x).item()}")
         pos_emb = self.pe[:, offset:offset + x.size(1)]
         return self.dropout(x), self.dropout(pos_emb)
     
