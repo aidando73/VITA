@@ -343,7 +343,7 @@ class WhaleAudioEmbeddings(nn.Module):
         print("hidden_states", hidden_states.shape)
         pre_hidden_states = hidden_states
         hidden_states, pos_embeds = self.positional_embedding(hidden_states)
-        print("hidden_states eq check", pre_hidden_states == hidden_states)
+        print("hidden_states eq check", torch.sum(pre_hidden_states == hidden_states).item(), "out of", torch.numel(hidden_states))
         print("pos_embeds", pos_embeds.shape)
         return hidden_states, pos_embeds
 
