@@ -1027,6 +1027,7 @@ class Qwen2ForConditionalGeneration(nn.Module, SupportsLoRA, SupportsMultiModal)
         audio_input = inputs["data"]
         audio_masks = inputs["mask"]
         audio_features = self.audio_tower(audio_input, audio_masks)["last_hidden_state"]
+        print("audio_features.shape", audio_features.shape)
         audio_masks = audio_masks[:, 2::2][:, 2::2]
 
         return self.audio_projector(audio_features, audio_masks)
@@ -1129,14 +1130,18 @@ class Qwen2ForConditionalGeneration(nn.Module, SupportsLoRA, SupportsMultiModal)
             )
 
         audio_input = self._parse_and_validate_audio_input(**kwargs)
+        print("audio_input", audio_input)
 
         if audio_input is not None:
             audio_embeddings, audio_masks = self._process_audio_input(audio_input)
+            print("audio_embeddings", audio_embeddings)
+            print("audio_masks", audio_masks)
 
             input_embeds = self._merge_multimodal_embeddings(
                     input_ids, input_embeds, audio_embeddings, audio_masks,
                     self.config.audio_token_index,
             )
+            print("input_embeds.shape", input_embeds.shape)
         
         if image_input is not None or audio_input is not None:
             input_ids = None

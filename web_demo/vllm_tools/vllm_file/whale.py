@@ -677,6 +677,9 @@ class WhaleAudioModel(PreTrainedModel):
         last_hidden_state = encoder_outputs.last_hidden_state
         pooled_output = last_hidden_state[:, 0, :]
 
+        print("last_hidden_state", last_hidden_state.shape)
+        print("pooled_output", pooled_output.shape)
+
         if not return_dict:
             return (last_hidden_state, pooled_output) + encoder_outputs[1:]
 
