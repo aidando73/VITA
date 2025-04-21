@@ -831,14 +831,21 @@ class Qwen2MultiModalAudioProjector(nn.Module):
             audio_features.masked_fill_(~mask_pad.bool().unsqueeze(-1), 0.0)
 
         audio_features = audio_features.transpose(1, 2)  # B, channels, T
+        print("audio_features.shape after transpose", audio_features.shape)
 
         hidden_states = self.left_padding(audio_features)
+        print("hidden_states.shape after left padding", hidden_states.shape)
+        print("hidden_states after left padding", hidden_states)
         hidden_states = self.conv1d(hidden_states)
+        print("hidden_states.shape after conv1d", hidden_states.shape)
         hidden_states = hidden_states.transpose(1, 2)
+        print("hidden_states.shape after transpose", hidden_states.shape)
         hidden_states = self.norm(hidden_states)
+        print("hidden_states.shape after norm", hidden_states.shape)
         hidden_states = self.act(hidden_states)
+        print("hidden_states.shape after act", hidden_states.shape)
         hidden_states = self.linear(hidden_states)
-
+        print("hidden_states.shape after linear", hidden_states.shape)
         return hidden_states, mask_pad[:, 0::2]
     
 
