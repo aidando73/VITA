@@ -1134,14 +1134,28 @@ class Qwen2ForConditionalGeneration(nn.Module, SupportsLoRA, SupportsMultiModal)
 
         if audio_input is not None:
             audio_embeddings, audio_masks = self._process_audio_input(audio_input)
-            print("audio_embeddings", audio_embeddings)
-            print("audio_masks", audio_masks)
+            print("audio_embeddings.shape", audio_embeddings.shape)
+            print("audio_masks.shape", audio_masks.shape)
 
+            # Decode input_ids into text and print using auto-tokenizer
+            from transformers import AutoTokenizer
+            
+            try:
+                # Try to load the tokenizer based on the model's config name if available
+                tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B")
+                decoded_text = tokenizer.decode(input_ids.tolist())
+                print("Decoded input_ids:", decoded_text)
+            except Exception as e:
+                # Fallback to printing raw input_ids if tokenizer loading fails
+                print("Failed to decode with AutoTokenizer:", str(e))
+                print("Raw input_ids:", input_ids)
+
+            print("input_embeds.shape pre merge", input_embeds.shape)
             input_embeds = self._merge_multimodal_embeddings(
                     input_ids, input_embeds, audio_embeddings, audio_masks,
                     self.config.audio_token_index,
             )
-            print("input_embeds.shape", input_embeds.shape)
+            print("input_embeds.shape post merge", input_embeds.shape)
         
         if image_input is not None or audio_input is not None:
             input_ids = None
