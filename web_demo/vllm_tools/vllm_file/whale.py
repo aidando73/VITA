@@ -236,9 +236,13 @@ class WhalePositionalEncoding(torch.nn.Module):
         self.dropout = torch.nn.Dropout(p=config.dropout)
         self.max_len = config.max_position_embeddings
 
+        print("Initializing positional encoding")
         self.pe = torch.zeros(self.max_len, self.d_model)
+        print("init pe shape", self.pe.shape)
         position = torch.arange(0, self.max_len,
                                 dtype=torch.float32).unsqueeze(1)
+        print("position shape", position.shape)
+        print(f"position mean: {torch.mean(position).item()}, position std: {torch.std(position).item()}, position min: {torch.min(position).item()}, position max: {torch.max(position).item()}")
         div_term = torch.exp(
             torch.arange(0, self.d_model, 2, dtype=torch.float32) *
             -(math.log(10000.0) / self.d_model))
