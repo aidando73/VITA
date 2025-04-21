@@ -340,7 +340,10 @@ class WhaleAudioEmbeddings(nn.Module):
     def forward(self, input_features: torch.Tensor) -> torch.Tensor:
 
         hidden_states = self.embedding(input_features)
+        print("hidden_states", hidden_states.shape)
         hidden_states, pos_embeds = self.positional_embedding(hidden_states)
+        print("hidden_states after positional embedding", hidden_states.shape)
+        print("pos_embeds", pos_embeds.shape)
         return hidden_states, pos_embeds
 
 
