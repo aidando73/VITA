@@ -807,6 +807,7 @@ class Qwen2MultiModalAudioProjector(nn.Module):
         self.audio_hidden_size = config.audio_config.hidden_size
         self.text_hidden_size = config.text_config.hidden_size
         self.kernel_size = config.audio_projector_kernel_size
+        print("self.kernel_size", self.kernel_size)
 
         self.left_padding = nn.ConstantPad1d(padding=(0, self.kernel_size - 1), value=0.0) 
         self.conv1d = nn.Conv1d(
