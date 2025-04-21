@@ -319,6 +319,9 @@ class RelPositionalEncoding(WhalePositionalEncoding):
         x = x * self.xscale
         print(f"x after xscale mean: {torch.mean(x).item()}, x std: {torch.std(x).item()}, x min: {torch.min(x).item()}, x max: {torch.max(x).item()}")
         pos_emb = self.pe[:, offset:offset + x.size(1)]
+        print(f"pos_emb shape: {pos_emb.shape}")
+        print(f"pos_emb", pos_emb)
+        print(f"pos_emb mean: {torch.mean(pos_emb).item()}, pos_emb std: {torch.std(pos_emb).item()}, pos_emb min: {torch.min(pos_emb).item()}, pos_emb max: {torch.max(pos_emb).item()}")
         return self.dropout(x), self.dropout(pos_emb)
     
 
