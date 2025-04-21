@@ -341,8 +341,9 @@ class WhaleAudioEmbeddings(nn.Module):
 
         hidden_states = self.embedding(input_features)
         print("hidden_states", hidden_states.shape)
+        pre_hidden_states = hidden_states
         hidden_states, pos_embeds = self.positional_embedding(hidden_states)
-        print("hidden_states after positional embedding", hidden_states.shape)
+        print("hidden_states eq check", pre_hidden_states == hidden_states)
         print("pos_embeds", pos_embeds.shape)
         return hidden_states, pos_embeds
 
