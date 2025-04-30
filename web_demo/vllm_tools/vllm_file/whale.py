@@ -177,6 +177,7 @@ class WhaleConv2dSubsampling4(nn.Module):
         )
 
         self.intermediate_size = self.hidden_size * (((self.input_dim - 1) // 2 - 1) // 2)
+        print("intermediate_size", self.intermediate_size)
         self.out = nn.Linear(self.intermediate_size, self.hidden_size)
         # The right context for every conv layer is computed by:
         # (kernel_size - 1) * frame_rate_of_this_layer
@@ -205,8 +206,16 @@ class WhaleConv2dSubsampling4(nn.Module):
         """
         x = x.unsqueeze(1)  # (b, c=1, t, f)
         x = self.conv_in(x)
+        print("x after conv subsampling", x.shape)
         b, c, t, f = x.size()
-        x = self.out(x.transpose(1, 2).contiguous().view(b, t, c * f))
+
+        x = x.transpose(1, 2)
+        print("x after transpose", x.shape)
+        x = x.contiguous().view(b, t, c * f)
+        print("x after reshape", x.shape)
+
+        x = self.out(x)
+        print("x after out", x.shape)
 
         return x, x_mask[:, 2::2][:, 2::2]
     
@@ -227,9 +236,13 @@ class WhalePositionalEncoding(torch.nn.Module):
         self.dropout = torch.nn.Dropout(p=config.dropout)
         self.max_len = config.max_position_embeddings
 
+        print("Initializing positional encoding")
         self.pe = torch.zeros(self.max_len, self.d_model)
+        print("init pe shape", self.pe.shape)
         position = torch.arange(0, self.max_len,
                                 dtype=torch.float32).unsqueeze(1)
+        print("position shape", position.shape)
+        print(f"position mean: {torch.mean(position).item()}, position std: {torch.std(position).item()}, position min: {torch.min(position).item()}, position max: {torch.max(position).item()}")
         div_term = torch.exp(
             torch.arange(0, self.d_model, 2, dtype=torch.float32) *
             -(math.log(10000.0) / self.d_model))
@@ -305,8 +318,14 @@ class RelPositionalEncoding(WhalePositionalEncoding):
             torch.Tensor: Positional embedding tensor (1, time, `*`).
         """
         self.pe = self.pe.to(x.device)
+        print("xscale", self.xscale)
+        print(f"x mean: {torch.mean(x).item()}, x std: {torch.std(x).item()}, x min: {torch.min(x).item()}, x max: {torch.max(x).item()}")
         x = x * self.xscale
+        print(f"x after xscale mean: {torch.mean(x).item()}, x std: {torch.std(x).item()}, x min: {torch.min(x).item()}, x max: {torch.max(x).item()}")
         pos_emb = self.pe[:, offset:offset + x.size(1)]
+        print(f"pos_emb shape: {pos_emb.shape}")
+        print(f"pos_emb", pos_emb)
+        print(f"pos_emb mean: {torch.mean(pos_emb).item()}, pos_emb std: {torch.std(pos_emb).item()}, pos_emb min: {torch.min(pos_emb).item()}, pos_emb max: {torch.max(pos_emb).item()}")
         return self.dropout(x), self.dropout(pos_emb)
     
 
@@ -331,7 +350,11 @@ class WhaleAudioEmbeddings(nn.Module):
     def forward(self, input_features: torch.Tensor) -> torch.Tensor:
 
         hidden_states = self.embedding(input_features)
+        print("hidden_states", hidden_states.shape)
+        pre_hidden_states = hidden_states
         hidden_states, pos_embeds = self.positional_embedding(hidden_states)
+        print("hidden_states eq check", torch.sum(pre_hidden_states == hidden_states).item(), "out of", torch.numel(hidden_states))
+        print("pos_embeds", pos_embeds.shape)
         return hidden_states, pos_embeds
 
 
@@ -617,6 +640,12 @@ class WhaleAudioModel(PreTrainedModel):
             return_dict: Optional[bool] = None,
             pixel_embeds: Optional[torch.FloatTensor] = None,
     ) -> Union[Tuple, BaseModelOutputWithPooling]:
+        print("input_features", input_features.shape)
+        print("attention_mask", attention_mask.shape)
+        print("output_hidden_states", output_hidden_states)
+        print("return_dict", return_dict)
+        print("pixel_embeds", pixel_embeds)
+
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
         )
@@ -629,10 +658,15 @@ class WhaleAudioModel(PreTrainedModel):
             hidden_states = pixel_embeds
         else:
             if len(input_features.shape) == 3:
+                print("input_features pre conv subsampling", input_features.shape)
                 input_features, attention_mask = self.subsampling(input_features, attention_mask)
+                print("input_features post conv subsampling", input_features.shape)
                 hidden_states, pos_embeds = self.embeddings(input_features)
+                print("hidden_states post embedding", hidden_states.shape)
+                print("pos_embeds post embedding", pos_embeds.shape)
             else:
                 raise ValueError(f'wrong pixel_values size: {input_features.shape}')
+
         encoder_outputs = self.encoder(
             inputs_embeds=hidden_states,
             attention_mask=attention_mask,
@@ -642,6 +676,9 @@ class WhaleAudioModel(PreTrainedModel):
         )
         last_hidden_state = encoder_outputs.last_hidden_state
         pooled_output = last_hidden_state[:, 0, :]
+
+        print("last_hidden_state", last_hidden_state.shape)
+        print("pooled_output", pooled_output.shape)
 
         if not return_dict:
             return (last_hidden_state, pooled_output) + encoder_outputs[1:]

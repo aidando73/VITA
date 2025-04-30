@@ -807,6 +807,7 @@ class Qwen2MultiModalAudioProjector(nn.Module):
         self.audio_hidden_size = config.audio_config.hidden_size
         self.text_hidden_size = config.text_config.hidden_size
         self.kernel_size = config.audio_projector_kernel_size
+        print("self.kernel_size", self.kernel_size)
 
         self.left_padding = nn.ConstantPad1d(padding=(0, self.kernel_size - 1), value=0.0) 
         self.conv1d = nn.Conv1d(
@@ -830,14 +831,21 @@ class Qwen2MultiModalAudioProjector(nn.Module):
             audio_features.masked_fill_(~mask_pad.bool().unsqueeze(-1), 0.0)
 
         audio_features = audio_features.transpose(1, 2)  # B, channels, T
+        print("audio_features.shape after transpose", audio_features.shape)
 
         hidden_states = self.left_padding(audio_features)
+        print("hidden_states.shape after left padding", hidden_states.shape)
+        print("hidden_states after left padding", hidden_states)
         hidden_states = self.conv1d(hidden_states)
+        print("hidden_states.shape after conv1d", hidden_states.shape)
         hidden_states = hidden_states.transpose(1, 2)
+        print("hidden_states.shape after transpose", hidden_states.shape)
         hidden_states = self.norm(hidden_states)
+        print("hidden_states.shape after norm", hidden_states.shape)
         hidden_states = self.act(hidden_states)
+        print("hidden_states.shape after act", hidden_states.shape)
         hidden_states = self.linear(hidden_states)
-
+        print("hidden_states.shape after linear", hidden_states.shape)
         return hidden_states, mask_pad[:, 0::2]
     
 
@@ -1027,6 +1035,7 @@ class Qwen2ForConditionalGeneration(nn.Module, SupportsLoRA, SupportsMultiModal)
         audio_input = inputs["data"]
         audio_masks = inputs["mask"]
         audio_features = self.audio_tower(audio_input, audio_masks)["last_hidden_state"]
+        print("audio_features.shape", audio_features.shape)
         audio_masks = audio_masks[:, 2::2][:, 2::2]
 
         return self.audio_projector(audio_features, audio_masks)
@@ -1129,14 +1138,32 @@ class Qwen2ForConditionalGeneration(nn.Module, SupportsLoRA, SupportsMultiModal)
             )
 
         audio_input = self._parse_and_validate_audio_input(**kwargs)
+        print("audio_input", audio_input)
 
         if audio_input is not None:
             audio_embeddings, audio_masks = self._process_audio_input(audio_input)
+            print("audio_embeddings.shape", audio_embeddings.shape)
+            print("audio_masks.shape", audio_masks.shape)
 
+            # Decode input_ids into text and print using auto-tokenizer
+            from transformers import AutoTokenizer
+            
+            try:
+                # Try to load the tokenizer based on the model's config name if available
+                tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B")
+                decoded_text = tokenizer.decode(input_ids.tolist())
+                print("Decoded input_ids:", decoded_text)
+            except Exception as e:
+                # Fallback to printing raw input_ids if tokenizer loading fails
+                print("Failed to decode with AutoTokenizer:", str(e))
+                print("Raw input_ids:", input_ids)
+
+            print("input_embeds.shape pre merge", input_embeds.shape)
             input_embeds = self._merge_multimodal_embeddings(
                     input_ids, input_embeds, audio_embeddings, audio_masks,
                     self.config.audio_token_index,
             )
+            print("input_embeds.shape post merge", input_embeds.shape)
         
         if image_input is not None or audio_input is not None:
             input_ids = None

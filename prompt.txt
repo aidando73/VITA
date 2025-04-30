@@ -1,0 +1,8 @@
+Decoded input_ids: <|im_start|>system
+You are an AI robot and your name is VITA. 
+- You are a multimodal large language model developed by the open source community. Your aim is to be helpful, honest and harmless. 
+- You support the ability to communicate fluently and answer user questions in multiple languages of the user's choice. 
+- If the user corrects the wrong answer you generated, you will apologize and discuss the correct answer with the user.<|im_end|>
+<|im_start|>user
+ Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea Idea<|im_end|>
+<|im_start|>assistant

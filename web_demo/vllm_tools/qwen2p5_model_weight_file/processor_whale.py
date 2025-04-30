@@ -112,6 +112,10 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         self.cmvn_file = cmvn_file
         self.cmvn_means = cmvn_means
         self.cmvn_istds = cmvn_istds
+        print("cmvn_preload", self.cmvn_preload)
+        print("cmvn_file", self.cmvn_file)
+        # print("cmvn_means", self.cmvn_means)
+        # print("cmvn_istds", self.cmvn_istds)
 
         if self.cmvn_preload:
             if self.cmvn_means is not None and self.cmvn_istds is not None:
@@ -236,6 +240,7 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         self, input_features: List[np.ndarray], attention_mask: Optional[np.ndarray] = None
     ) -> List[np.ndarray]:
         lengths = attention_mask.sum(-1) if attention_mask is not None else [x.shape[0] for x in input_features]
+        print("lengths", lengths)
         return [
             self.utterance_cmvn(
                 x, 
@@ -356,12 +361,39 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         if not is_batched:
             raw_speech = [raw_speech]
 
+        print(sampling_rate)
+
         # extract fbank features
         features = [self._extract_fbank_features(waveform) for waveform in raw_speech]
 
+        # Visualize mel filter bank spectrogram as a graph
+        import matplotlib.pyplot as plt
+        for i, feature in enumerate(features):
+            if i >= 1:  # Only show the first sample to avoid too many plots
+                break
+                
+            plt.figure(figsize=(10, 4))
+            plt.imshow(feature.T, aspect='auto', origin='lower')
+            plt.colorbar(format='%+2.0f dB')
+            plt.title(f'Mel Spectrogram')
+            plt.xlabel('Time Frames')
+            plt.ylabel('Mel Frequency Bins')
+            plt.tight_layout()
+            
+            # Save the plot to a file
+            output_dir = 'mel_spectrograms'
+            os.makedirs(output_dir, exist_ok=True)
+            plt.savefig(f'{output_dir}/mel_spectrogram_sample_{i}.png')
+            plt.close()
+            
+            print(f"Mel spectrogram visualization saved to {output_dir}/mel_spectrogram_sample_{i}.png")
+
         # convert into correct format for padding
         encoded_inputs = BatchFeature({"input_features": features})
+        # print("encoded_inputs", encoded_inputs)
+        # print("encoded_inputs['input_features']", [feature.shape for feature in encoded_inputs['input_features']])
 
+        print("padding enabled: ", padding)
         padded_inputs = self.pad(
             encoded_inputs,
             padding=padding,
@@ -371,6 +403,8 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
             return_attention_mask=return_attention_mask,
             **kwargs,
         )
+        # print("padded_inputs", padded_inputs)
+        # print("padded_inputs['input_features']", [feature.shape for feature in padded_inputs['input_features']])
 
         # make sure list is in array format
         input_features = padded_inputs.get("input_features")
@@ -381,6 +415,9 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
         if attention_mask is not None:
             padded_inputs["attention_mask"] = [np.asarray(array, dtype=np.int32) for array in attention_mask]
 
+        print("attention_mask", attention_mask[0])
+        print("attention_mask mean:", np.mean(attention_mask[0]))
+
         # Utterance-level cepstral mean and variance normalization
         if self.do_ceptral_normalize:
             attention_mask = (
@@ -388,9 +425,27 @@ class WhaleFeatureExtractor(SequenceFeatureExtractor):
                 if self._get_padding_strategies(padding, max_length=max_length) is not PaddingStrategy.DO_NOT_PAD
                 else None
             )
+            # Print input feature statistics before normalization
+            print("Before CMVN:")
+            for i, feature in enumerate(padded_inputs["input_features"]):
+                print(f"Input feature {i} shape: {feature.shape}")
+                print(f"Input feature {i} mean: {np.mean(feature):.6f}")
+                print(f"Input feature {i} std: {np.std(feature):.6f}")
+                print(f"Input feature {i} min: {np.min(feature):.6f}")
+                print(f"Input feature {i} max: {np.max(feature):.6f}")
+
             padded_inputs["input_features"] = self.normalize(
                 padded_inputs["input_features"], attention_mask=attention_mask
             )
+
+            # Print input feature statistics after normalization
+            print("After CMVN:")
+            for i, feature in enumerate(padded_inputs["input_features"]):
+                print(f"Input feature {i} shape: {feature.shape}")
+                print(f"Input feature {i} mean: {np.mean(feature):.6f}")
+                print(f"Input feature {i} std: {np.std(feature):.6f}")
+                print(f"Input feature {i} min: {np.min(feature):.6f}")
+                print(f"Input feature {i} max: {np.max(feature):.6f}")
 
         if return_tensors is not None:
             padded_inputs = padded_inputs.convert_to_tensors(return_tensors)

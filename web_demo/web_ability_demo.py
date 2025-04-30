@@ -18,6 +18,8 @@ from vita.model.builder import load_pretrained_model
 from vita.model.vita_tts.decoder.llm2tts import llm2TTS
 from vita.model.language_model.vita_qwen2 import VITAQwen2Config, VITAQwen2ForCausalLM
 from transformers import AutoConfig, AutoModel, AutoTokenizer, AutoFeatureExtractor
+import time
+
 decoder_topk = 2
 codec_chunk_size = 40
 codec_padding_size = 10
@@ -396,6 +398,7 @@ def _launch_demo(llm, model_config, sampling_params, tokenizer, feature_extracto
         return []
 
     def stream_audio_output(history, task_history):
+        start_time = time.time()
         text = task_history[-1][-1]
         if not text:
             import pdb;pdb.set_trace()
@@ -477,7 +480,7 @@ def _launch_demo(llm, model_config, sampling_params, tokenizer, feature_extracto
         ).then(
             stream_audio_output,[chatbot, task_history], [audio_output],
         )
-     
+
 
 
     server_port = 18806
@@ -487,8 +490,7 @@ def _launch_demo(llm, model_config, sampling_params, tokenizer, feature_extracto
         server_name="0.0.0.0",
         server_port=server_port,
         show_api=False,
-        show_error=False,
-        auth=('123','123'),
+        show_error=False
         )
 
 def main(model_path):
